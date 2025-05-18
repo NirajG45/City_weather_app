@@ -3,29 +3,47 @@ import requests
 
 app = Flask(__name__)
 
-API_KEY = "f82d429e6a4cb8fecadd760ca2c4a2ed"  # this is my OpenWeatherMap API key for free use
+API_KEY = "f82d429e6a4cb8fecadd760ca2c4a2ed"  # <-- अपनी API Key डालो
 
 @app.route("/", methods=["GET", "POST"])
-def index():
-    weather_data = None
+def home():
+    weather = None
     error = None
+    chart_data = []
 
     if request.method == "POST":
         city = request.form.get("city")
-        url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
-        response = requests.get(url)
-        data = response.json()
+        geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
 
-        if response.status_code == 200:
-            weather_data = {
-                "city": city,
-                "temperature": data["main"]["temp"],
-                "description": data["weather"][0]["description"].capitalize()
-            }
+        geo_res = requests.get(geo_url).json()
+        if geo_res:
+            lat = geo_res[0]["lat"]
+            lon = geo_res[0]["lon"]
+
+            forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+            res = requests.get(forecast_url)
+            data = res.json()
+
+            if res.status_code == 200:
+                weather = {
+                    "city": city.title(),
+                    "description": data["list"][0]["weather"][0]["description"].title(),
+                    "temperature": data["list"][0]["main"]["temp"]
+                }
+
+                # Prepare chart data (next 8 timestamps = approx 24 hours)
+                chart_data = [
+                    {
+                        "time": item["dt_txt"][11:16],
+                        "temp": item["main"]["temp"]
+                    } for item in data["list"][:8]
+                ]
+            else:
+                error = "Weather data not available."
         else:
-            error = data.get("message", "City not found or API error.")
+            error = "City not found."
 
-    return render_template("index.html", weather=weather_data, error=error)
+    return render_template("weather.html", weather=weather, error=error, chart_data=chart_data)
 
 if __name__ == "__main__":
     app.run(debug=True)
