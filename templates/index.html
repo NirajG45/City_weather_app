@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather App</title>
+    <style>
+        body { font-family: Arial; text-align: center; padding: 40px; }
+        input, button { padding: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Weather Checker</h1>
+    <form method="post">
+        <input type="text" name="city" placeholder="Enter city name" required>
+        <br>
+        <button type="submit">Get Weather</button>
+    </form>
+
+    {% if weather %}
+        <h2>Weather in {{ weather.city }}</h2>
+        <p>{{ weather.description }}</p>
+        <p>Temperature: {{ weather.temperature }}°C</p>
+    {% elif error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+</body>
+</html>
