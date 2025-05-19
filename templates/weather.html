@@ -59,28 +59,33 @@
         {% if chart_data %}
             <canvas id="weatherChart" width="400" height="200"></canvas>
             <script>
-                const ctx = document.getElementById('weatherChart').getContext('2d');
-                const chart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: {{ chart_data | map(attribute='time') | list | tojson }},
-                        datasets: [{
-                            label: 'Next 24hr Temperature (°C)',
-                            data: {{ chart_data | map(attribute='temp') | list | tojson }},
-                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                            borderColor: 'rgba(41, 128, 185,1.0)',
-                            borderWidth: 2,
-                            tension: 0.3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: false
+                document.addEventListener("DOMContentLoaded", function () {
+                    const labels = JSON.parse('{{ chart_data | map(attribute="time") | list | tojson | safe }}');
+                    const data = JSON.parse('{{ chart_data | map(attribute="temp") | list | tojson | safe }}');
+
+                    const ctx = document.getElementById('weatherChart').getContext('2d');
+                    const chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Next 24hr Temperature (°C)',
+                                data: data,
+                                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                                borderColor: 'rgba(41, 128, 185,1.0)',
+                                borderWidth: 2,
+                                tension: 0.3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: false
+                                }
                             }
                         }
-                    }
+                    });
                 });
             </script>
         {% endif %}
