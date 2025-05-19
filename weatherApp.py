@@ -3,7 +3,7 @@ import requests
 
 app = Flask(__name__)
 
-API_KEY = "f82d429e6a4cb8fecadd760ca2c4a2ed"  # <-- अपनी API Key डालो
+API_KEY = "f82d429e6a4cb8fecadd760ca2c4a2ed"  # API Key
 
 @app.route("/", methods=["GET", "POST"])
 def home():
