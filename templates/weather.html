@@ -6,44 +6,118 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            font-family: Arial;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             padding: 40px;
-            background: #eef2f3;
+            background: linear-gradient(to right, #2c3e50, #4ca1af);
+            color: #f4f4f4;
+            margin: 0;
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 500px;
+            max-width: 600px;
             margin: auto;
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            background: #2f2f2f;
+            border-radius: 18px;
+            padding: 35px 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .datetime {
+            font-size: 1rem;
+            color: #ccc;
+            margin-bottom: 20px;
         }
 
         input, button {
-            padding: 10px;
+            padding: 12px;
             margin-top: 10px;
-            width: 80%;
+            width: 85%;
             font-size: 16px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        input {
+            background-color: #444;
+            color: white;
+            border: 1px solid #666;
+        }
+
+        input::placeholder {
+            color: #bbb;
         }
 
         button {
             background: #3498db;
             color: white;
-            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        h2, p {
+            margin: 12px 0;
+            color: #e0e0e0;
         }
 
         canvas {
             margin-top: 30px;
+            background-color: #1f1f1f;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .error {
+            color: #e74c3c;
+            margin-top: 15px;
+        }
+
+        /* Moving cloud */
+        .cloud {
+            position: absolute;
+            top: 20px;
+            left: -200px;
+            width: 120px;
+            height: 60px;
+            background: #fff;
+            border-radius: 60px;
+            box-shadow:
+                60px 0 #fff,
+                30px -20px #fff,
+                90px -10px #fff;
+            animation: moveCloud 30s linear infinite;
+            z-index: 0;
+            opacity: 0.2;
+        }
+
+        @keyframes moveCloud {
+            0% { left: -200px; }
+            100% { left: 110%; }
         }
     </style>
 </head>
 <body>
+    <div class="cloud"></div> <!-- Cloud animation -->
+
     <div class="container">
         <h1>🌦 Weather Checker</h1>
+        <div class="datetime">
+            <span id="currentDateTime"></span>
+        </div>
         <form method="post">
             <input type="text" name="city" placeholder="Enter city name" required>
             <br>
@@ -60,6 +134,19 @@
             <canvas id="weatherChart" width="400" height="200"></canvas>
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
+                    // Show current date and time
+                    function updateDateTime() {
+                        const now = new Date();
+                        const options = {
+                            weekday: 'long', year: 'numeric', month: 'long',
+                            day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+                        };
+                        document.getElementById("currentDateTime").textContent = now.toLocaleString('en-US', options);
+                    }
+                    setInterval(updateDateTime, 1000);
+                    updateDateTime();
+
+                    // Weather chart
                     const labels = JSON.parse('{{ chart_data | map(attribute="time") | list | tojson | safe }}');
                     const data = JSON.parse('{{ chart_data | map(attribute="temp") | list | tojson | safe }}');
 
@@ -69,19 +156,36 @@
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'Next 24hr Temperature (°C)',
+                                label: 'Hourly Temperature (°C)',
                                 data: data,
                                 backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                                borderColor: 'rgba(41, 128, 185,1.0)',
+                                borderColor: 'rgba(52, 152, 219, 1)',
                                 borderWidth: 2,
-                                tension: 0.3
+                                tension: 0.4,
+                                pointBackgroundColor: 'white',
+                                fill: true
                             }]
                         },
                         options: {
                             responsive: true,
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        color: '#ffffff'
+                                    }
+                                }
+                            },
                             scales: {
+                                x: {
+                                    ticks: {
+                                        color: '#cccccc'
+                                    }
+                                },
                                 y: {
-                                    beginAtZero: false
+                                    beginAtZero: false,
+                                    ticks: {
+                                        color: '#cccccc'
+                                    }
                                 }
                             }
                         }
@@ -91,7 +195,7 @@
         {% endif %}
 
         {% if error %}
-            <p style="color:red;">{{ error }}</p>
+            <p class="error">{{ error }}</p>
         {% endif %}
     </div>
 </body>
