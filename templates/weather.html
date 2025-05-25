@@ -3,60 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <title>Weather App</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --font-sm: clamp(0.9rem, 1.5vw, 1.1rem);
-            --font-md: clamp(1rem, 2vw, 1.3rem);
-            --font-lg: clamp(1.5rem, 3vw, 2.2rem);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
-            padding: 20px;
             background: linear-gradient(to right, #2c3e50, #4ca1af);
             color: #f4f4f4;
-            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
             overflow-x: hidden;
         }
 
+        .cloud {
+            position: absolute;
+            top: 20px;
+            left: -150px;
+            width: 100px;
+            height: 50px;
+            background: #fff;
+            border-radius: 50px;
+            opacity: 0.1;
+            z-index: 0;
+            box-shadow:
+                30px 0 #fff,
+                60px -10px #fff,
+                90px 10px #fff;
+            animation: moveCloud 40s linear infinite;
+        }
+
+        @keyframes moveCloud {
+            0% { left: -200px; }
+            100% { left: 110%; }
+        }
+
         .container {
-            max-width: 600px;
-            width: 100%;
-            margin: auto;
             background: #2f2f2f;
-            border-radius: 18px;
             padding: 30px 20px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
             position: relative;
             z-index: 1;
         }
 
         h1 {
-            font-size: var(--font-lg);
+            text-align: center;
+            font-size: 1.8rem;
             margin-bottom: 10px;
         }
 
         .datetime {
-            font-size: var(--font-sm);
+            text-align: center;
+            font-size: 0.9rem;
             color: #ccc;
             margin-bottom: 20px;
         }
 
-        input, button {
-            padding: 12px;
-            margin-top: 10px;
-            width: 90%;
-            font-size: var(--font-sm);
-            border-radius: 8px;
-            border: none;
-            outline: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         input {
+            padding: 12px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
             background-color: #444;
             color: white;
             border: 1px solid #666;
@@ -67,9 +92,14 @@
         }
 
         button {
+            padding: 12px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
             background: #3498db;
             color: white;
             font-weight: bold;
+            cursor: pointer;
             transition: background 0.3s ease;
         }
 
@@ -78,60 +108,59 @@
         }
 
         h2, p {
+            text-align: center;
             margin: 12px 0;
-            color: #e0e0e0;
-            font-size: var(--font-md);
         }
 
         canvas {
-            margin-top: 30px;
+            margin-top: 20px;
             background-color: #1f1f1f;
             border-radius: 12px;
             padding: 10px;
-            width: 100% !important;
-            height: auto !important;
+            width: 100%;
+            height: auto;
         }
 
         .error {
             color: #e74c3c;
-            font-size: var(--font-sm);
-            margin-top: 15px;
+            margin-top: 10px;
+            text-align: center;
         }
 
-        .cloud {
-            position: absolute;
-            top: 10px;
-            left: -200px;
-            width: 120px;
-            height: 60px;
-            background: #fff;
-            border-radius: 60px;
-            box-shadow:
-                60px 0 #fff,
-                30px -20px #fff,
-                90px -10px #fff;
-            animation: moveCloud 30s linear infinite;
-            z-index: 0;
-            opacity: 0.2;
-        }
-
-        @keyframes moveCloud {
-            0% { left: -200px; }
-            100% { left: 110%; }
-        }
-
-        @media screen and (max-width: 480px) {
-            .container {
-                padding: 25px 15px;
-            }
-
-            canvas {
-                max-width: 100%;
+        @media screen and (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
             }
         }
+        h1 {
+    font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.datetime {
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+input, button {
+    font-size: clamp(0.95rem, 2.2vw, 1.05rem);
+}
+
+h2, p {
+    font-size: clamp(1rem, 2vw, 1.1rem);
+    text-align: center;
+}
+
+.error {
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
+}
+
     </style>
 </head>
 <body>
+
     <div class="cloud"></div>
 
     <div class="container">
@@ -141,7 +170,6 @@
         </div>
         <form method="post">
             <input type="text" name="city" placeholder="Enter city name" required>
-            <br>
             <button type="submit">Get Weather</button>
         </form>
 
@@ -152,7 +180,7 @@
         {% endif %}
 
         {% if chart_data %}
-            <canvas id="weatherChart" width="400" height="200"></canvas>
+            <canvas id="weatherChart"></canvas>
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
                     // Show current date and time
@@ -198,15 +226,10 @@
                             },
                             scales: {
                                 x: {
-                                    ticks: {
-                                        color: '#cccccc'
-                                    }
+                                    ticks: { color: '#ccc' }
                                 },
                                 y: {
-                                    beginAtZero: false,
-                                    ticks: {
-                                        color: '#cccccc'
-                                    }
+                                    ticks: { color: '#ccc' }
                                 }
                             }
                         }
