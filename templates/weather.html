@@ -4,11 +4,18 @@
     <meta charset="UTF-8">
     <title>Weather App</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        :root {
+            --font-sm: clamp(0.9rem, 1.5vw, 1.1rem);
+            --font-md: clamp(1rem, 2vw, 1.3rem);
+            --font-lg: clamp(1.5rem, 3vw, 2.2rem);
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
-            padding: 40px;
+            padding: 20px;
             background: linear-gradient(to right, #2c3e50, #4ca1af);
             color: #f4f4f4;
             margin: 0;
@@ -17,22 +24,23 @@
 
         .container {
             max-width: 600px;
+            width: 100%;
             margin: auto;
             background: #2f2f2f;
             border-radius: 18px;
-            padding: 35px 30px;
+            padding: 30px 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
             position: relative;
             z-index: 1;
         }
 
         h1 {
-            font-size: 2em;
+            font-size: var(--font-lg);
             margin-bottom: 10px;
         }
 
         .datetime {
-            font-size: 1rem;
+            font-size: var(--font-sm);
             color: #ccc;
             margin-bottom: 20px;
         }
@@ -40,8 +48,8 @@
         input, button {
             padding: 12px;
             margin-top: 10px;
-            width: 85%;
-            font-size: 16px;
+            width: 90%;
+            font-size: var(--font-sm);
             border-radius: 8px;
             border: none;
             outline: none;
@@ -72,6 +80,7 @@
         h2, p {
             margin: 12px 0;
             color: #e0e0e0;
+            font-size: var(--font-md);
         }
 
         canvas {
@@ -79,17 +88,19 @@
             background-color: #1f1f1f;
             border-radius: 12px;
             padding: 10px;
+            width: 100% !important;
+            height: auto !important;
         }
 
         .error {
             color: #e74c3c;
+            font-size: var(--font-sm);
             margin-top: 15px;
         }
 
-        /* Moving cloud */
         .cloud {
             position: absolute;
-            top: 20px;
+            top: 10px;
             left: -200px;
             width: 120px;
             height: 60px;
@@ -108,10 +119,20 @@
             0% { left: -200px; }
             100% { left: 110%; }
         }
+
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 25px 15px;
+            }
+
+            canvas {
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="cloud"></div> <!-- Cloud animation -->
+    <div class="cloud"></div>
 
     <div class="container">
         <h1>🌦 Weather Checker</h1>
